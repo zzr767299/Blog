@@ -6,7 +6,7 @@ const siteMetadata = {
   description: '分享技术、生活与思考',
   language: 'zh-cn',
   theme: 'system', // system, dark or light
-  siteUrl: 'https://yourdomain.com',
+  siteUrl: 'https://zzrblog.eu.cc',
   siteRepo: 'https://github.com/yourusername/my-blog',
   siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
   socialBanner: `${process.env.BASE_PATH || ''}/static/images/twitter-card.png`,
