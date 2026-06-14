@@ -1,17 +1,17 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
   title: '我的博客',
-  author: '博主',
-  headerTitle: '我的个人博客',
+  author: '雨泽',
+  headerTitle: '雨泽的Blog',
   description: '分享技术、生活与思考',
   language: 'zh-cn',
-  theme: 'system', // system, dark or light
+  theme: 'dark', // system, dark or light
   siteUrl: 'https://zzrblog.eu.cc',
-  siteRepo: 'https://github.com/yourusername/my-blog',
+  siteRepo: 'https://github.com/zzr767299/Blog',
   siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
   socialBanner: `${process.env.BASE_PATH || ''}/static/images/twitter-card.png`,
-  email: 'your@email.com',
-  github: 'https://github.com/yourusername',
+  email: '1206302772@qq.com',
+  github: 'https://github.com/zzr767299',
   x: 'https://twitter.com/yourusername',
   locale: 'zh-CN',
   // set to true if you want a navbar fixed to the top

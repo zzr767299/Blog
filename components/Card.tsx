@@ -2,50 +2,52 @@ import Image from './Image'
 import Link from './Link'
 
 const Card = ({ title, description, imgSrc, href }) => (
-  <div className="md max-w-[544px] p-4 md:w-1/2">
-    <div
-      className={`${
-        imgSrc && 'h-full'
-      } overflow-hidden rounded-md border-2 border-gray-200/60 dark:border-gray-700/60`}
-    >
+  <div className="w-full p-3 md:w-1/2">
+    <div className="group overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800/60 dark:hover:shadow-primary-900/20">
       {imgSrc &&
         (href ? (
           <Link href={href} aria-label={`Link to ${title}`}>
+            <div className="relative aspect-[16/9] overflow-hidden">
+              <Image
+                alt={title}
+                src={imgSrc}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+          </Link>
+        ) : (
+          <div className="relative aspect-[16/9] overflow-hidden">
             <Image
               alt={title}
               src={imgSrc}
-              className="object-cover object-center md:h-36 lg:h-48"
-              width={544}
-              height={306}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
-          </Link>
-        ) : (
-          <Image
-            alt={title}
-            src={imgSrc}
-            className="object-cover object-center md:h-36 lg:h-48"
-            width={544}
-            height={306}
-          />
+          </div>
         ))}
-      <div className="p-6">
-        <h2 className="mb-3 text-2xl leading-8 font-bold tracking-tight">
+      <div className="p-5">
+        <h2 className="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100">
           {href ? (
-            <Link href={href} aria-label={`Link to ${title}`}>
+            <Link
+              href={href}
+              aria-label={`Link to ${title}`}
+              className="transition-colors hover:text-primary-500 dark:hover:text-primary-400"
+            >
               {title}
             </Link>
           ) : (
             title
           )}
         </h2>
-        <p className="prose mb-3 max-w-none text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">{description}</p>
         {href && (
           <Link
             href={href}
-            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-base leading-6 font-medium"
+            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-sm font-medium"
             aria-label={`Link to ${title}`}
           >
-            Learn more &rarr;
+            了解更多 &rarr;
           </Link>
         )}
       </div>
