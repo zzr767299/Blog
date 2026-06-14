@@ -3,7 +3,7 @@ import Link from './Link'
 
 const Card = ({ title, description, imgSrc, href }) => (
   <div className="w-full p-3 md:w-1/2">
-    <div className="group overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800/60 dark:hover:shadow-primary-900/20">
+    <div className="group dark:hover:shadow-primary-900/20 overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800/60">
       {imgSrc &&
         (href ? (
           <Link href={href} aria-label={`Link to ${title}`}>
@@ -32,7 +32,7 @@ const Card = ({ title, description, imgSrc, href }) => (
             <Link
               href={href}
               aria-label={`Link to ${title}`}
-              className="transition-colors hover:text-primary-500 dark:hover:text-primary-400"
+              className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
             >
               {title}
             </Link>

@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@plugin "@tailwindcss/forms";
+@plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @source '../node_modules/pliny';
 @custom-variant dark (&:where(.dark, .dark *));
@@ -7,21 +7,22 @@
 /* Core theme configuration */
 @theme {
   /* Font families */
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+  --font-sans:
+    var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   /* Colors — Cyberpunk neon cyan */
   --color-primary-50: oklch(0.97 0.02 190);
   --color-primary-100: oklch(0.94 0.04 190);
   --color-primary-200: oklch(0.88 0.08 190);
-  --color-primary-300: oklch(0.80 0.14 190);
+  --color-primary-300: oklch(0.8 0.14 190);
   --color-primary-400: oklch(0.72 0.22 190);
   --color-primary-500: oklch(0.65 0.28 190);
   --color-primary-600: oklch(0.58 0.26 192);
-  --color-primary-700: oklch(0.50 0.22 194);
+  --color-primary-700: oklch(0.5 0.22 194);
   --color-primary-800: oklch(0.42 0.18 196);
   --color-primary-900: oklch(0.34 0.14 198);
-  --color-primary-950: oklch(0.22 0.10 200);
+  --color-primary-950: oklch(0.22 0.1 200);
 
   /* Cool-tinted grays for cyberpunk feel */
   --color-gray-50: oklch(0.98 0.005 220);
@@ -34,7 +35,7 @@
   --color-gray-700: oklch(0.34 0.035 220);
   --color-gray-800: oklch(0.24 0.03 220);
   --color-gray-900: oklch(0.18 0.025 220);
-  --color-gray-950: oklch(0.10 0.02 220);
+  --color-gray-950: oklch(0.1 0.02 220);
 
   /* Line heights */
   --line-height-11: 2.75rem;

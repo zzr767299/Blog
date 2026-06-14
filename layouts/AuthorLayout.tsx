@@ -26,7 +26,7 @@ export default function AuthorLayout({ children, content }: Props) {
               alt="avatar"
               width={192}
               height={192}
-              className="h-40 w-40 rounded-full ring-4 ring-primary-100 dark:ring-primary-900/30"
+              className="ring-primary-100 dark:ring-primary-900/30 h-40 w-40 rounded-full ring-4"
             />
           )}
           <h3 className="pt-4 text-xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
@@ -35,9 +35,7 @@ export default function AuthorLayout({ children, content }: Props) {
           {occupation && (
             <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">{occupation}</div>
           )}
-          {company && (
-            <div className="text-sm text-gray-500 dark:text-gray-400">{company}</div>
-          )}
+          {company && <div className="text-sm text-gray-500 dark:text-gray-400">{company}</div>}
           <div className="mt-4 flex gap-3">
             {email && <SocialIcon kind="mail" href={`mailto:${email}`} />}
             {github && <SocialIcon kind="github" href={github} />}

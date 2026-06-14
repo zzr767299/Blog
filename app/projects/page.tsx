@@ -11,9 +11,7 @@ export default function Projects() {
         <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl md:text-5xl dark:text-gray-100">
           项目
         </h1>
-        <p className="mt-2 text-lg text-gray-500 dark:text-gray-400">
-          展示我的项目作品
-        </p>
+        <p className="mt-2 text-lg text-gray-500 dark:text-gray-400">展示我的项目作品</p>
       </div>
       <div className="-m-3 flex flex-wrap">
         {projectsData.map((d) => (

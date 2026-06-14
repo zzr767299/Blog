@@ -44,7 +44,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
         <Link
           href={currentPage - 1 === 1 ? `/${basePath}/` : `/${basePath}/page/${currentPage - 1}`}
           rel="prev"
-          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:border-primary-500 hover:text-primary-500 dark:border-gray-700 dark:text-gray-300"
+          className="hover:border-primary-500 hover:text-primary-500 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors dark:border-gray-700 dark:text-gray-300"
         >
           上一页
         </Link>
@@ -64,7 +64,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
         <Link
           href={`/${basePath}/page/${currentPage + 1}`}
           rel="next"
-          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:border-primary-500 hover:text-primary-500 dark:border-gray-700 dark:text-gray-300"
+          className="hover:border-primary-500 hover:text-primary-500 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors dark:border-gray-700 dark:text-gray-300"
         >
           下一页
         </Link>
@@ -103,7 +103,7 @@ export default function ListLayout({
                 type="text"
                 onChange={(e) => setSearchValue(e.target.value)}
                 placeholder="搜索文章..."
-                className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 transition-colors focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                className="focus:border-primary-500 focus:ring-primary-500 block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               />
             </label>
             <svg

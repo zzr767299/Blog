@@ -30,7 +30,7 @@ const MobileNav = () => {
       <button
         aria-label="Toggle Menu"
         onClick={onToggleNav}
-        className="rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-primary-500 sm:hidden dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-primary-400"
+        className="hover:text-primary-500 dark:hover:text-primary-400 rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 sm:hidden dark:text-gray-300 dark:hover:bg-gray-800"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -92,15 +92,12 @@ const MobileNav = () => {
                   </svg>
                 </button>
               </div>
-              <nav
-                ref={navRef}
-                className="flex flex-col px-3 py-4"
-              >
+              <nav ref={navRef} className="flex flex-col px-3 py-4">
                 {headerNavLinks.map((link) => (
                   <Link
                     key={link.title}
                     href={link.href}
-                    className="rounded-lg px-4 py-3 text-base font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-primary-500 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-primary-400"
+                    className="hover:text-primary-500 dark:hover:text-primary-400 rounded-lg px-4 py-3 text-base font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
                     onClick={onToggleNav}
                   >
                     {link.title}

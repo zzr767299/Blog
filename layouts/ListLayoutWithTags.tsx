@@ -45,7 +45,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
         <Link
           href={currentPage - 1 === 1 ? `/${basePath}/` : `/${basePath}/page/${currentPage - 1}`}
           rel="prev"
-          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:border-primary-500 hover:text-primary-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-primary-400 dark:hover:text-primary-400"
+          className="hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-400 dark:hover:text-primary-400 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors dark:border-gray-700 dark:text-gray-300"
         >
           上一页
         </Link>
@@ -65,7 +65,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
         <Link
           href={`/${basePath}/page/${currentPage + 1}`}
           rel="next"
-          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:border-primary-500 hover:text-primary-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-primary-400 dark:hover:text-primary-400"
+          className="hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-400 dark:hover:text-primary-400 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors dark:border-gray-700 dark:text-gray-300"
         >
           下一页
         </Link>
@@ -97,15 +97,15 @@ export default function ListLayoutWithTags({
         </div>
         <div className="flex gap-8">
           {/* Sidebar */}
-          <div className="hidden h-full max-h-screen min-w-[240px] max-w-[260px] overflow-auto rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:block dark:border-gray-700 dark:bg-gray-800/60">
+          <div className="hidden h-full max-h-screen max-w-[260px] min-w-[240px] overflow-auto rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:block dark:border-gray-700 dark:bg-gray-800/60">
             {pathname.startsWith('/blog') ? (
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-primary-500">
+              <h3 className="text-primary-500 mb-4 text-sm font-bold tracking-wider uppercase">
                 全部文章
               </h3>
             ) : (
               <Link
                 href="/blog"
-                className="mb-4 block text-sm font-bold uppercase tracking-wider text-gray-700 transition-colors hover:text-primary-500 dark:text-gray-300"
+                className="hover:text-primary-500 mb-4 block text-sm font-bold tracking-wider text-gray-700 uppercase transition-colors dark:text-gray-300"
               >
                 全部文章
               </Link>
@@ -114,13 +114,13 @@ export default function ListLayoutWithTags({
               {sortedTags.map((t) => (
                 <li key={t}>
                   {decodeURI(pathname.split('/tags/')[1]) === slug(t) ? (
-                    <span className="block rounded-lg bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
+                    <span className="bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 block rounded-lg px-3 py-1.5 text-sm font-medium">
                       {`${t} (${tagCounts[t]})`}
                     </span>
                   ) : (
                     <Link
                       href={`/tags/${slug(t)}`}
-                      className="block rounded-lg px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-primary-500 dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-primary-400"
+                      className="hover:text-primary-500 dark:hover:text-primary-400 block rounded-lg px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50"
                       aria-label={`View posts tagged ${t}`}
                     >
                       {`${t} (${tagCounts[t]})`}

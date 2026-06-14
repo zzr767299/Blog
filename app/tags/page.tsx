@@ -17,19 +17,17 @@ export default async function Page() {
         </h1>
       </div>
       <div className="flex flex-wrap gap-3">
-        {tagKeys.length === 0 && (
-          <p className="text-gray-500 dark:text-gray-400">暂无标签</p>
-        )}
+        {tagKeys.length === 0 && <p className="text-gray-500 dark:text-gray-400">暂无标签</p>}
         {sortedTags.map((t) => {
           return (
             <Link
               key={t}
               href={`/tags/${slug(t)}`}
-              className="group flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-all duration-200 hover:border-primary-500 hover:text-primary-500 hover:shadow-md dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300 dark:hover:border-primary-400 dark:hover:text-primary-400"
+              className="group hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-400 dark:hover:text-primary-400 flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-all duration-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300"
               aria-label={`View posts tagged ${t}`}
             >
               {t}
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 transition-colors group-hover:bg-primary-50 group-hover:text-primary-600 dark:bg-gray-700 dark:text-gray-400 dark:group-hover:bg-primary-900/30 dark:group-hover:text-primary-400">
+              <span className="group-hover:bg-primary-50 group-hover:text-primary-600 dark:group-hover:bg-primary-900/30 dark:group-hover:text-primary-400 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 transition-colors dark:bg-gray-700 dark:text-gray-400">
                 {tagCounts[t]}
               </span>
             </Link>

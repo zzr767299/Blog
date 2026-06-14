@@ -9,7 +9,7 @@
 
 /* Code title styles */
 .remark-code-title {
-  @apply rounded-xs bg-gray-900 px-5 py-3 font-mono text-sm font-bold text-primary-400 dark:bg-gray-950;
+  @apply text-primary-400 rounded-xs bg-gray-900 px-5 py-3 font-mono text-sm font-bold dark:bg-gray-950;
 }
 
 .remark-code-title + div > pre {
@@ -34,7 +34,7 @@
 }
 
 .highlight-line {
-  @apply border-primary-400 -mx-4 border-l-4 bg-primary-950/40;
+  @apply border-primary-400 bg-primary-950/40 -mx-4 border-l-4;
 }
 
 .line-number::before {
