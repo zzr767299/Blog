@@ -1,6 +1,6 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: '我的博客',
+  title: '雨泽Blog',
   author: '雨泽',
   headerTitle: '雨泽的Blog',
   description: '分享技术、生活与思考',

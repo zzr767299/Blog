@@ -17,7 +17,7 @@ const PostCard = ({ title, slug, date, summary, tags, images }: PostCardProps) =
   const coverImage = images?.[0] || '/static/images/twitter-card.png'
 
   return (
-    <article className="group dark:hover:shadow-primary-900/20 flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800/60">
+    <article className="group card-container card-container-hover flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1">
       <Link href={`/blog/${slug}`} className="overflow-hidden">
         <div className="relative aspect-[16/9] overflow-hidden">
           <Image
