@@ -1,0 +1,292 @@
+---
+title: '实现一台PC串流运行两台VR头盔(超级详细的步骤)'
+date: '2026-06-16'
+tags: ['VR', '串联', 'HTCVIVE']
+summary: '一台PC串流两台HTCVIVE的解决方案'
+---
+
+> 由于公司项目需要，需要一台PC能够串流运行两台HTC VIVE Cosmos头显，当时想的是硬件层面通过分线器去解决信号传输问题，想通过HTC的串流盒进行信号复制的方式来解决问题，于是从网上购买了分线器抱着试一试的心态，但最终结果还是不行，不行怎么办呢，于是又提出了虚拟机的方案，就是通过主机运行一个VR工程，连接一台HTC，然后虚拟机运行一个VR工程，连接一台HTC，这样理论上就可行了。
+
+然后就去研究了vmware workstation，装上之后，安装了Win11的虚拟机，然后插Usb的线会弹出是插入虚拟机还是主机，但是最大的问题就是当我下载SteamVR运行的时候发现，即使我插入了头盔仍然会显示请插入头盔线缆，于是我打开设备管理器一看，原来是没有显卡，VR串流本质就是通过字节流解码后在进行传输，但是这个画面本质上还是需要显卡来进行渲染的，于是乎去网上寻找解决方案，了解到通过EXSI进行显卡直通，于是我就准备往这个方面进行尝试，于是下载了EXSI7.0,但是我的EXSI 是在WorkStation中新建虚拟机，选择的EXSI7.0进行安装，然后通过DVD镜像将下载好的EXSI的镜像文件传递进行，然后进行安装，（这里我后面才意识到，有坑），EXSI安装过程中也是比较坎坷，遇到了一些问题，好在最后都解决了，但是当我通过账号和密码登录EXSI的网页管理器后发现，如图所示，本应该出现PCI直通的一些设备，例如显卡，Usb，Audio等物理设备，但是我的就是一片灰色，PCI设备列表中没有任何物理设备。
+
+![图片](/static/images/uploaded/1781580416969-01-j1jq.png)
+
+  然后也是在这个地方浪费了很多时间，例如换Vm的版本，换EXSI的版本，例如6.7,6.5，Vm的16.5等等，为了排除变量因素干扰，我还换了几台主机，结果都是一样的，正当我苦思冥想不知道问题出在哪的时候，我突然在B站看到一个视频[EXSI显卡直通](https://www.bilibili.com/video/BV1cQ4y1m7HP/spm_id_from=333.788&vd_source=f8173adcfc74f270c11caa05b6a962d7)，我发现他们的EXSI貌似都是通过U盘引导启动安装的，而并非我这种通过Vm的Work Station安装的，我在想是不是需要通过这种方式安装的EXSI才能直通显卡，于是我打算在家里拿我自己的电脑试试，但是没能成功，但是转念一想，如果成功了这个EXSI也就相当于一个系统，那我原本的Win10系统怎么办，这不符合我的需求，于是这个方案被我否定了，于是在我万念俱灰之际，我放弃了Vm虚拟机的研究，转头想回归本质，想想能不能在外网上搜索关于一拖二的方案，然后就发现了这么一篇帖子，给了我新的方向[实现一台PC运行两台HTC VIVE](https://maker.pro/oculus/projects/connecting-2-htc-vive-to-one-computer-step-by-step-instruction)。这篇贴上需要科学上网，于是我把内容贴在这里
+
+![图片](/static/images/uploaded/1781580443410-03-z1az.png)
+![图片](/static/images/uploaded/1781580456030-04-5imo.jpeg)
+![图片](/static/images/uploaded/1781580463515-05-pkmu.png)
+
+于是就打算安装这篇帖子来试试，于是就找到了Hyper-V这种微软自带的虚拟机，但是他要求Window Server2016，刚开始看不懂下面的步骤，只想着安装完成Hyper-V试试看，然后搜索Hyper-v的安装过程，和Hyper-v的显卡直通，于是我按照B站这位UP主详细的显卡直通教程[Hyper-v直通教程](https://www.bilibili.com/video/BV1Fu41177Xj/?spm_id_from=333.337.search-card.all.click&vd_source=f8173adcfc74f270c11caa05b6a962d7)然后是成功的将显卡添加到Hyper-v的虚拟机中，这个时候我想应该是可以了，于是想试试SteamVR能够连接成功，结果还是不行，我想是不是没有显卡驱动，比较这个设备连接都是依赖驱动的，于是我从英伟达官网下载了这个显卡的驱动，发现一个问题，显示驱动无法安装，然后我就去搜索了，为什么无法安装驱动？后面在这个视频的评论区看到，有人评论这个并非是显卡直通，而是显卡虚拟化，也就是显卡共享也叫显卡分区。
+
+![图片](/static/images/uploaded/1781580506242-06-ud9z.jpeg)
+
+这个本质上还是一张显卡共享，还是虚拟化的系统，然后又失败了，我此时此刻只想放弃，然后我又反复的看外网的帖子，上面说需要两张显卡，我一想也是，我的设想是将一张显卡的HDMI和一个SSD的物理硬盘，及两个USB的接口分配给虚拟机使用，如果共有一张显卡，显然是不行的，于是费了很大劲，终于搞到了一张1660s的显卡，安装到我的主板上，这几天什么都没干主要是拆显卡，装系统，晕死，然后准备双显卡的方案，刚好这个时候在bibi找到了一篇关于Hyper-v的视频，里面教程非常详细，给Up主好评，[Hyper-v显卡直通教程](https://www.bilibili.com/video/BV1FG4y1y7tg/?spm_id_from=333.880.my_history.page.click)，可以根据教程一步一步安装，在尝试这套方案之前，建议先看自身的显卡和主板是否支持直通，例如主板需要支持SR-IOV、Access Control Service(ACS)等才能进行直通。
+因此在开始之前需要准备两块SSD的物理硬盘 + 两块显卡，我的显卡是4080+ 1660s
+可以通过微软提供的powershell命令检测一下硬件支持情况：打开管理模式的Power Shell。
+
+```csharp
+curl -o SurveyDDA.ps1 https://raw.githubusercontent.com/MicrosoftDocs/Virtualization-Documentation/live/hyperv-tools/DiscreteDeviceAssignment/SurveyDDA.ps1 .\SurveyDDA.ps1
+```
+运行完毕后会得到如下的一个清单：
+
+```csharp
+PS C:\Users\Administrator> .\SurveyDDA.ps1
+Executing SurveyDDA.ps1, revision 1
+Generating a list of PCI Express endpoint devices
+
+
+NVIDIA GeForce GTX 4080
+Legacy Express Endpoint -- graphics controller.
+All of the interrupts are line-based, no assignment can work.
+
+
+Intel(R) Xeon(R) processor P family/Core i7 IOAPIC - 2026
+Embedded Endpoint -- less secure.
+    And it has no interrupts at all -- assignment can work.
+    And it requires at least: 1 MB of MMIO gap space
+PCIROOT(0)#PCI(0504)
+
+
+Intel(R) Xeon(R) processor P family/Core i7 IOxAPIC Configuration Registers - 2036
+Embedded Endpoint -- less secure.
+    And it has no interrupts at all -- assignment can work.
+    And it requires at least: 1 MB of MMIO gap space
+PCIROOT(16)#PCI(0504)
+…………
+```
+All of the interrupts are line-based, no assignment can work. 红色代表不被支持
+And it has no interrupts at all -- assignment can work.绿色支持直通。
+PCIROOT(0)#PCI(0504) 是硬件的位置路径
+
+如果主板支持，接下来就进行Window Server2022的安装，我要说明的是最少是需要Server2016，win10/11都是不可以的，一定要Server的环境，因为Server的环境对Hyper有一些特殊的支持，下载网址如下：[Window Server2022下载地址](https://www.microsoft.com/zh-cn/evalcenter/download-windows-server-2022)，安装完成后，有些主机可能会没有网络，或者只有一个屏幕显示，这都是正常情况，因为没有装显卡驱动，但是安装英伟达显卡驱动这里有个坑，安装完成后会提示
+
+> windows server2022 datacenter 丢失wlanapi.dll
+
+[修复WindowServer 丢失wlanapi.dll](https://blog.csdn.net/u010000905/article/details/137227954)这里贴出解决方案，如果是没有网络，你只能先用手机进行USB共享，然后去下载显卡驱动然后安装，这里注意，如果你安装完成驱动并重启后发现还是没有网络，你可以下载鲁大师把剩余的一些驱动进行安装，因为传统Window10/11在Inter驱动安装程序上可以下载到所有的驱动，但是Server系统是不可以的，鲁大师安装完成驱动后你会发现有些网卡驱动会安装失败，我去查了原因，是因为传统的有线网卡驱动在Server上是不支持的，因此这个有些网卡需要我们手动安装，[Window Server有线网卡安装](https://blog.csdn.net/2201_75362610/article/details/133199949)，可以参考这篇教程，即可安装成功，然后就是配置Window Server的环境,设置登录时不启动服务器管理器
+
+![图片](/static/images/uploaded/1781580732363-07-7gnj.png)
+
+然后对组本地策略编辑器进行一些设置，运行 gpedit.msc 找到计算机配置=> Window设置=> 安全设置=> 账号策略 => 密码策略
+禁用密码必须符合复杂性要求
+
+![图片](/static/images/uploaded/1781580784621-08-22t6.png)
+
+将密码最长使用期限设置为0
+
+![图片](/static/images/uploaded/1781580812663-09-bwcg.png)
+
+然后找到本地策略 => 安全选项 => 交互式登录: 无需按Ctrl + Alt + Delete，右键属性进行启用
+
+![图片](/static/images/uploaded/1781580854001-10-efix.png)
+
+打开计算机管理=> 本地用户和组 => 用户，右键创建新用户，我这里创建了名称为Win10的用户，
+
+![图片](/static/images/uploaded/1781580876124-11-lapg.png)
+
+将密码设置为永不过期，然后点击这个属于
+
+![图片](/static/images/uploaded/1781580900192-12-0cml.png)
+
+点击添加，将我们创建的账号添加到管理员的组中
+
+![图片](/static/images/uploaded/1781580923100-13-cszc.png)
+
+点击添加，输入administrator后，点击确认，如果提示找不到任何关于这个名称的用户，那么你就需要点击高级
+
+![图片](/static/images/uploaded/1781580937199-14-mqzu.png)
+
+找到名称为Administrator的用户然后点击确定即可
+
+![图片](/static/images/uploaded/1781580954923-15-x4ct.png)
+
+完成后我们找到Administrator的管理员账户，点击属性，将这个账户设置为密码永不过期和禁用
+
+![图片](/static/images/uploaded/1781580975012-16-zxat.png)
+
+完成这些操作后一定要重启，重启后打开服务器管理器，选择添加角色和功能
+
+![图片](/static/images/uploaded/1781581009734-17-wuhx.png)
+
+![图片](/static/images/uploaded/1781581019356-18-5l71.png)
+
+![图片](/static/images/uploaded/1781581030974-19-8pvx.png)
+
+![图片](/static/images/uploaded/1781581041894-20-0kdb.png)
+
+勾选Hyper-v进行安装
+
+![图片](/static/images/uploaded/1781581101473-21-h5g4.png)
+
+![图片](/static/images/uploaded/1781581108804-22-t6zr.png)
+
+![图片](/static/images/uploaded/1781581118819-23-f31b.png)
+
+下一步相关的配置先不管
+
+![图片](/static/images/uploaded/1781581135659-24-m0px.png)
+
+可以选择虚拟机配置存储路径，PS：建议放在主机依赖的硬盘上，不要放在未来需要给虚拟机用的硬盘
+
+![图片](/static/images/uploaded/1781581163248-25-teva.png)
+
+![图片](/static/images/uploaded/1781581172143-26-7vja.png)
+
+这里安装完成后，需要重启，重启完成后，打开Hyper管理器界面可以看到我们的主机
+
+![图片](/static/images/uploaded/1781581188437-27-9lpy.png)
+
+这个时候找到我们的虚拟交换管理器
+
+![图片](/static/images/uploaded/1781581200267-28-x3fv.png)
+
+进行虚拟交换机的配置
+
+![图片](/static/images/uploaded/1781581211586-29-7ql5.png)
+
+我们先新建一个外部虚拟交换机，名称可以随意取
+
+![图片](/static/images/uploaded/1781581220353-30-bqju.png)
+
+然后创建一个内部的虚拟交换机，然后应用更改
+
+![图片](/static/images/uploaded/1781581230830-31-16uk.png)
+
+然后我们开始新建虚拟机，在创建之前，需要你先下载一个Win10的系统镜像，我们发现没有直接ISO镜像的下载
+
+![图片](/static/images/uploaded/1781581240857-32-u4ps.png)
+
+这里有给小技巧，按下F12，打开开发者工具，将网页设置为手机页面，然后刷新一下，然后就会看到有镜像的下载
+
+![图片](/static/images/uploaded/1781581254133-33-xmtw.png)
+
+继续我们虚拟机的创建，选择虚拟机的名称，我这里叫Win10，你可以随意取，这个名称后续有作用，勾选虚拟机的存储位置，也是一样存储到主机的硬盘中
+
+![图片](/static/images/uploaded/1781581269598-34-ar2p.png)
+
+![图片](/static/images/uploaded/1781581277319-35-kqzn.png)
+
+![图片](/static/images/uploaded/1781581312139-36-ve94.png)
+
+![图片](/static/images/uploaded/1781581321293-37-wdkt.png)
+
+![图片](/static/images/uploaded/1781581327741-38-uimo.png)
+
+![图片](/static/images/uploaded/1781581335319-39-39ih.png)
+
+OK，我们完成了虚拟机的创建
+
+![图片](/static/images/uploaded/1781581360272-40-07am.png)
+
+接下来我们需要对物理硬盘进行脱机，因此我们要准备好两块硬盘，最好都是固态，我对磁盘1进行了脱机
+
+![图片](/static/images/uploaded/1781581372311-41-gupg.png)
+
+然后打开Hyper-v管理器，右键点击设置，找到SCSI控制器，添加硬盘驱动器，在物理硬盘这里可以看到我们脱机的物理硬盘,选中物理硬盘进行应用
+
+![图片](/static/images/uploaded/1781581386165-42-bxch.png)
+
+然后找到我们的处理器，为了虚拟机不卡顿拥有更多资源，将数量设置为16个
+
+![图片](/static/images/uploaded/1781581394842-43-mr3u.png)
+
+然后添加DVD驱动器。将我们下载的win10镜像文件找到，然后应用
+
+![图片](/static/images/uploaded/1781581403507-44-1kj0.png)
+
+最后添加我们的网络适配器，不添加的话虚拟机没有网络
+
+![图片](/static/images/uploaded/1781581414771-45-q7h8.png)
+
+然后在调整一下我们固件的启动顺序,然后就可以开机启动了
+
+![图片](/static/images/uploaded/1781581451367-46-0w51.png)
+
+![图片](/static/images/uploaded/1781581457808-47-c5yg.png)
+
+系统安装没有什么太大需要说的，将win10的系统安装到我们的物理硬盘上
+
+![图片](/static/images/uploaded/1781581467899-48-g21d.png)
+
+![图片](/static/images/uploaded/1781581475117-49-inwv.png)
+
+完成后直接关机，然后打开Hyper管理器的设置，将DVD驱动器删除
+
+![图片](/static/images/uploaded/1781581483285-50-3ni1.png)
+
+然后禁用检查点，关闭来宾操作系统
+
+![图片](/static/images/uploaded/1781581493890-51-qklw.png)
+
+之后需要将主机的屏幕设置为从不关闭，最好是在电源中去设置才有效，这里不多赘诉，完成后，打开我们的设备管理器，找到我们需要添加到虚拟机的显卡位置路径，以及两个USB的位置路径，两个USB刚好可以够两台PICO的串流测试，
+
+![图片](/static/images/uploaded/1781581503733-52-bg4z.png)
+
+![图片](/static/images/uploaded/1781581751531-53-lpbe.png)
+
+这里我只是进行展示，我的1660s和两个3.1的USB已经完成了添加到虚拟机，上述只是为了展示怎么找这个位置路径，找到后记得将位置路径复制下来，之后我们禁用掉我们需要添加到虚拟机的显卡和USB
+
+![图片](/static/images/uploaded/1781581645342-54-1ejj.png)
+
+禁用完成后，进行我们PowerShell命令操作，打开管理员模式的PowerShell,
+如下是我们需要用到的命令
+```
+# 变量赋值$locationpath需要直通硬件的位置路径，$VmName直通的指定虚拟机名称
+$locationpath = 'PCIROOT(0)#PCI(1F06)'
+$VmName = 'openwrt'
+# 卸载硬件
+Dismount-VMHostAssignableDevice -LocationPath $locationpath -Force
+# 直通设备的虚拟机不能被暂停或热迁移，所以自动关机动作必须为 ACPI shutdown 或者硬关机
+Set-VM -Name $VmName -AutomaticStopAction TurnOff
+# 将设备添加给指定虚拟机
+Add-VMAssignableDevice -VMName $VmName -LocationPath $locationpath
+# 查看虚拟机直通设备情况
+Get-VMAssignableDevice -VMName openwrt
+
+```
+1.先将主机从显卡卸载，我将1660s的显卡先卸载掉,"PCIROOT(0)#PCI(0100)#PCI(0000)" 是需要填你自身显卡的位置路径的，后续的USB等设备也是如此
+
+```
+Dismount-VMHostAssignableDevice -LocationPath "PCIROOT(0)#PCI(0100)#PCI(0000)" -force
+```
+2.卸载两个USB3.1的接口
+
+```
+Dismount-VMHostAssignableDevice -LocationPath "PCIROOT(0)#PCI(1C04)#PCI(0002)" -force
+Dismount-VMHostAssignableDevice -LocationPath "PCIROOT(0)#PCI(1400)#USBROOT(0)#USB(2)" -force
+
+```
+3.将卸载后的设备添加到虚拟机中，这个Win10是之前我们设置虚拟机的名称
+
+```
+Add-VMAssignableDevice -LocationPath "PCIROOT(0)#PCI(1C04)#PCI(0000)" -VMName "Win10"
+ Add-VMAssignableDevice -LocationPath "PCIROOT(0)#PCI(1C00)#PCI(0000)" -VMName "Win10"
+ Add-VMAssignableDevice -LocationPath "PCIROOT(0)#PCI(1C04)#PCI(0002)" -VMName "Win10"
+```
+4.获取所有已经添加到虚拟的设备，如同可以看到我们成功添加的设备
+
+```
+Get-VMAssignableDevice -VMName "Win10"
+```
+
+![图片](/static/images/uploaded/1781581571786-55-v9jf.png)
+
+5.如果需要将虚拟机中的设备进行移除操作，还原到主机中来,先将显卡从虚拟机中禁用，然后执行移除命令
+
+```
+Remove-VMAssignableDevice -LocationPath "PCIROOT(0)#PCI(1C04)#PCI(0000)" -VMName "Win10" 
+```
+6.然后将显卡添加到主机中
+
+```
+Mount-VMHostAssignableDevice -LocationPath "PCIROOT(0)#PCI(1C04)#PCI(0000)" 
+```
+7.完成虚拟机设备的添加后，可以运行虚拟机，打开虚拟机的设备管理器，可以看到我们显卡和USB设备
+
+![图片](/static/images/uploaded/1781581559978-56-xdrs.png)
+
+8.接下来简单了安装英伟达驱动，下载SteamVR，PICO Connenct 或VIVE Console for SteamVR进行串流测试，到此就结束了，实测两台HTC VIVE cosmos,两台Pico，或者一台Cosmos一台Pico，交替测试可正常运行，但是也有问题存在，就是虚拟机中的Unity 项目运行帧率偏低，只有16帧左右，我的想法是将我的4080和1660s进行对调，将虚拟机用好一点的显卡，主机用差一点的，经测试后，4080安装到主机上会显示
+
+> " 设备状态：该设备找不到足够的资源可以使用，如果要使用该设备，你需要停用该系统上的另一个设备。"
+
+我网上找了半天也没什么好的解决方案，因此我也没能测试，我也重装了显卡驱动，但是还是有这个警告，问题可能存在我的1660s的显卡供电在独立一个机箱，并非在主机的电源上，且显卡是在副显卡卡槽，如果调换顺序，然后将显卡的电源也插到本机上，应该可以做到。
