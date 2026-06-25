@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { readdir, stat } from 'fs/promises'
 import path from 'path'
 
+export const dynamic = 'force-static'
+
 const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'])
 
 async function scanImages(dir: string, baseDir: string): Promise<string[]> {
