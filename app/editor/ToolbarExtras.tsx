@@ -230,9 +230,9 @@ export default function ToolbarExtras({ content, onContentChange, onSaveScroll }
     if (videoType === 'mp4') {
       code = `<video controls width="100%">\n  <source src="${videoUrl}" type="video/mp4" />\n</video>`
     } else if (videoType === 'bilibili') {
-      code = `<iframe src="//player.bilibili.com/player.html?bvid=${videoUrl}&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;height:500px;" />`
+      code = `<iframe src="//player.bilibili.com/player.html?bvid=${videoUrl}&page=1" scrolling="no" border="0" frameBorder="no" framespacing="0" allowFullScreen style="width:100%;height:500px;" />`
     } else {
-      code = `<iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoUrl}" title="YouTube video player" frameborder="0" allowfullscreen />`
+      code = `<iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoUrl}" title="YouTube video player" frameBorder="0" allowFullScreen />`
     }
     insertAtCursor(code)
     setVideoUrl('')

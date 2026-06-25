@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import type { FrontmatterData } from './hooks/useMdxExport'
 
 interface Props {
@@ -9,14 +9,25 @@ interface Props {
 }
 
 const LAYOUTS = ['PostLayout', 'PostSimple', 'PostBanner']
+const DEFAULT_COVER = '/static/images/twitter-card.png'
 
 export default function FrontmatterPanel({ data, onChange }: Props) {
   const [isOpen, setIsOpen] = useState(true)
   const [tagInput, setTagInput] = useState('')
+  const [imagePickerOpen, setImagePickerOpen] = useState(false)
+  const [imageList, setImageList] = useState<{
+    static: { path: string; filename: string }[]
+    uploaded: { path: string; filename: string }[]
+  }>({ static: [], uploaded: [] })
+  const [imageLoading, setImageLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
-  const update = (partial: Partial<FrontmatterData>) => {
-    onChange({ ...data, ...partial })
-  }
+  const update = useCallback(
+    (partial: Partial<FrontmatterData>) => {
+      onChange({ ...data, ...partial })
+    },
+    [data, onChange]
+  )
 
   const addTag = () => {
     const tags = tagInput
@@ -31,6 +42,48 @@ export default function FrontmatterPanel({ data, onChange }: Props) {
 
   const removeTag = (tag: string) => {
     update({ tags: data.tags.filter((t) => t !== tag) })
+  }
+
+  const coverImage = data.images[0] || ''
+
+  const handleUploadCover = useCallback(
+    async (file: File) => {
+      setUploading(true)
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('type', 'image')
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData })
+        const result = await res.json()
+        if (res.ok && result.path) {
+          update({ images: [result.path] })
+        }
+      } finally {
+        setUploading(false)
+      }
+    },
+    [update]
+  )
+
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file) handleUploadCover(file)
+      e.target.value = ''
+    },
+    [handleUploadCover]
+  )
+
+  const openImagePicker = async () => {
+    setImagePickerOpen(true)
+    setImageLoading(true)
+    try {
+      const res = await fetch('/api/upload/list')
+      const data = await res.json()
+      setImageList(data)
+    } finally {
+      setImageLoading(false)
+    }
   }
 
   const inputClass =
@@ -174,6 +227,171 @@ export default function FrontmatterPanel({ data, onChange }: Props) {
                 草稿（生产环境不显示）
               </span>
             </label>
+          </div>
+
+          <div className="sm:col-span-2 lg:col-span-3">
+            <div className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
+              封面图
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="relative aspect-[16/9] w-40 shrink-0 overflow-hidden rounded-md border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={coverImage || DEFAULT_COVER}
+                  alt="封面预览"
+                  className="h-full w-full object-cover"
+                />
+                {!coverImage && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <span className="text-xs font-medium text-white">默认封面</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <div>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/bmp"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="cover-upload-input"
+                  />
+                  <button
+                    onClick={() => document.getElementById('cover-upload-input')?.click()}
+                    disabled={uploading}
+                    className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                  >
+                    {uploading ? '上传中...' : '上传新图'}
+                  </button>
+                </div>
+                <button
+                  onClick={openImagePicker}
+                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  从已有选择
+                </button>
+                {coverImage && (
+                  <button
+                    onClick={() => update({ images: [] })}
+                    className="rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:border-red-600 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"
+                  >
+                    清除封面
+                  </button>
+                )}
+                {coverImage && (
+                  <span className="max-w-xs truncate text-xs text-gray-400">{coverImage}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {imagePickerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <button
+            aria-label="关闭"
+            className="absolute inset-0 h-full w-full cursor-default"
+            onClick={() => setImagePickerOpen(false)}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="选择封面图"
+            className="relative z-10 flex max-h-[80vh] w-full max-w-2xl flex-col rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">选择封面图</h3>
+              <button
+                onClick={() => setImagePickerOpen(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {imageLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="border-primary-500 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+                </div>
+              ) : (
+                <>
+                  {imageList.uploaded.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        已上传图片
+                      </h4>
+                      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+                        {imageList.uploaded.map((img) => (
+                          <button
+                            key={img.path}
+                            onClick={() => {
+                              update({ images: [img.path] })
+                              setImagePickerOpen(false)
+                            }}
+                            className="group hover:border-primary-500 dark:hover:border-primary-400 relative aspect-[16/9] overflow-hidden rounded border border-gray-200 dark:border-gray-600"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={img.path}
+                              alt={img.filename}
+                              className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
+                              <span className="text-xs font-medium text-white opacity-0 group-hover:opacity-100">
+                                选择
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {imageList.static.length > 0 && (
+                    <div>
+                      <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        静态图片
+                      </h4>
+                      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+                        {imageList.static.map((img) => (
+                          <button
+                            key={img.path}
+                            onClick={() => {
+                              update({ images: [img.path] })
+                              setImagePickerOpen(false)
+                            }}
+                            className="group hover:border-primary-500 dark:hover:border-primary-400 relative aspect-[16/9] overflow-hidden rounded border border-gray-200 dark:border-gray-600"
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={img.path}
+                              alt={img.filename}
+                              className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
+                              <span className="text-xs font-medium text-white opacity-0 group-hover:opacity-100">
+                                选择
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {imageList.uploaded.length === 0 && imageList.static.length === 0 && (
+                    <p className="py-12 text-center text-sm text-gray-500">暂无可选图片</p>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setImagePickerOpen(false)}
+                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                取消
+              </button>
+            </div>
           </div>
         </div>
       )}

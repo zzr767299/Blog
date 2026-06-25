@@ -9,6 +9,7 @@ export interface FrontmatterData {
   summary: string
   draft: boolean
   layout: string
+  images: string[]
 }
 
 function sanitizeFilename(name: string): string {
@@ -31,6 +32,9 @@ function buildFrontmatter(data: FrontmatterData): string {
   }
   if (data.draft) {
     lines.push(`draft: true`)
+  }
+  if (data.images.length > 0) {
+    lines.push(`images: [${data.images.map((i) => `'${i}'`).join(', ')}]`)
   }
   if (data.layout && data.layout !== 'PostLayout') {
     lines.push(`layout: ${data.layout}`)

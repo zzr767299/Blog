@@ -5,6 +5,7 @@ import MDEditor from '@uiw/react-md-editor'
 import FrontmatterPanel from './FrontmatterPanel'
 import ToolbarExtras from './ToolbarExtras'
 import ExportButton from './ExportButton'
+import { useMdxImport } from './hooks/useMdxImport'
 import type { FrontmatterData } from './hooks/useMdxExport'
 
 export default function EditorClient() {
@@ -16,9 +17,11 @@ export default function EditorClient() {
     summary: '',
     draft: false,
     layout: 'PostLayout',
+    images: [],
   })
 
   const pendingScrollRef = useRef<{ textarea: number; preview: number } | null>(null)
+  const { importMdx } = useMdxImport()
 
   useEffect(() => {
     if (!pendingScrollRef.current) return
@@ -38,7 +41,20 @@ export default function EditorClient() {
     <div className="flex h-[calc(100vh-64px)] flex-col">
       <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2 dark:border-gray-700 dark:bg-gray-950">
         <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">MDX 博客编辑器</h1>
-        <ExportButton frontmatter={frontmatter} content={content} />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() =>
+              importMdx((fm, body) => {
+                setFrontmatter(fm)
+                setContent(body)
+              })
+            }
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            导入 MDX
+          </button>
+          <ExportButton frontmatter={frontmatter} content={content} />
+        </div>
       </div>
 
       <FrontmatterPanel data={frontmatter} onChange={setFrontmatter} />
@@ -58,6 +74,7 @@ export default function EditorClient() {
           height="100%"
           visibleDragbar={false}
           preview="live"
+          previewOptions={{ skipHtml: false }}
         />
       </div>
     </div>
