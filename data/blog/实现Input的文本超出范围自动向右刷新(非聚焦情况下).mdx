@@ -1,0 +1,73 @@
+---
+title: '实现Input的文本超出范围自动向右刷新(非聚焦情况下)'
+date: '2026-06-25'
+tags: ['Unity', 'UGUI']
+summary: '通过反射调用UnityUGUI底层来实现非聚集Input状态下的文本超出范围自动刷新'
+images: ['/static/images/uploaded/1782383230225-Gemini_Generated_Image_19nrjw19nrjw19nr-gf5r.png']
+---
+
+> 在做项目过程遇到了一个问题，当我语音输入的时候当语音转文字的文本超出Input组件显示的范围时，当我继续说话的时候，那么新的文本就看不到了，由于是长按左侧的语音按钮识别语音，那么Input组件实际上是不聚集的，想要去实现自动向右更新显示最新文本内容就有点麻烦。
+
+![图片](/static/images/uploaded/1782357884844-5eb14c99-bbdb-4ed9-b092-686cad2b5eb8-r9gb.png)
+
+最开始想通过修改RectTramsform坐标，在LateUpdate中手动计算text.preferredWidth - inputRect.width，并复制给textRt.anchoredPosition.x，但是底层的InputField的UpdateLabel() 似乎会强行重置排版，手动修改的值似乎有时候会被覆盖，有时候Text的渲染延迟导致算出的preferredWidth 不准，表现非常不稳定，卡住后不再滚动。
+
+然后就是想通过操作Carer和ForceLabelUpdate，在修改text后，调用Input.caretPostion = mInput.text.Length和mInputIP.ForceLabelUpdate()，但是查看源码发现，当Input没有聚集，它是不会根据光标位置来计算 mDrawStart 和 m_DrawEnd来更新滚动偏移Scroll Offset的。
+
+![图片](/static/images/uploaded/1782367603490-ScreenShot_2026-06-25_135506_690-43cx.png)
+
+从UGUI的源码可以看到，当m_AllowInput为false的时候，m_DrawStat=0，mDrawEnd = mText.Length，注释也说明了，而mAllowInput是什么呢？其实就是控制Input是否聚焦和失焦的字段
+
+![图片](/static/images/uploaded/1782368613596-ScreenShot_2026-06-25_142327_976-bunl.png)
+
+可以看到在Input中的只读属性IsFocused就是得到m_AllowInput的值，知道问题所在就好解决了，既然只有聚集的时候才会计算偏移，但是又不能直接让m_AllowInput设置为true进行聚集，那么就需要借助反射来解决，通过反射InputField中的m_AllowInput，在语音输入的时候，得到m_AllowInput的值，手动设置为true
+
+```csharp
+  private void LateUpdate()
+    {
+        if (mInputIP == null) return;
+        int currentLength = mInputIP.text.Length;
+        if (currentLength == mLastInputTextLength) return;
+        mLastInputTextLength = currentLength;
+        ScrollInputTextToEnd();
+    }
+
+    private void ScrollInputTextToEnd()
+    {
+        if (mInputIP == null || string.IsNullOrEmpty(mInputIP.text)) return;
+
+        if (mInputIP.isFocused) return;
+
+        CacheReflection();
+        if (m_AllowInputField == null) return;
+
+        bool original = (bool)m_AllowInputField.GetValue(mInputIP);
+        try
+        {
+            m_AllowInputField.SetValue(mInputIP, true);
+            mInputIP.caretPosition = mInputIP.text.Length;
+            mInputIP.ForceLabelUpdate();
+        }
+        finally
+        {
+            m_AllowInputField.SetValue(mInputIP, original);
+        }
+    }
+    private void CacheReflection()
+    {
+        if (m_ReflectionCached) return;
+        m_AllowInputField = typeof(InputField).GetField(
+            "m_AllowInput",
+            BindingFlags.NonPublic | BindingFlags.Instance
+        );
+        m_ReflectionCached = true;
+    }
+
+```
+
+由于反射还是比较消耗性能的，这里简单的缓存了一下，主要是通过反射字段去修改m_AllowInputField的值，在LateUpdate方法中调用，模拟聚焦的过程，让上述DrawStart和DrawEnd参与计算。
+
+下面是演示效果：
+<video controls width="100%">
+  <source src="/static/videos/uploaded/1782369957187-2026_06_25_14_44_47_917_1-kvtm.mp4" type="video/mp4" />
+</video>
